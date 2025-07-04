@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JWT Demo</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <input id="username" placeholder="Username" /><br>
+  <input id="password" type="password" placeholder="Password" /><br>
+  <button onclick="login()">Login</button>
+
+  <h2>Protected API</h2>
+  <button onclick="callProtected()">Call Protected</button>
+
+  <pre id="output"></pre>
+
+<script>
+let token = null;
+
+function login() {
+  fetch('https://7ieuortbp9.execute-api.us-west-2.amazonaws.com/login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    token = data.token;
+    document.getElementById('output').textContent = "Token: " + token;
+  });
+}
+
+function callProtected() {
+  fetch('https://7ieuortbp9.execute-api.us-west-2.amazonaws.com/data', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+  });
+}
+</script>
+</body>
+</html>
