@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JWT Generator</title>
+</head>
+<body>
+
+<h2>Generate JWT Token</h2>
+
+<label>Username: <input id="username" value=""></label><br><br>
+<button onclick="generate()">Get Token</button>
+
+<h3>Your JWT:</h3>
+<pre id="generated_token"></pre>
+
+<script>
+async function generate() {
+    const username = document.getElementById('username').value;
+
+    const res = await fetch("https://9oym71uq05.execute-api.us-east-2.amazonaws.com/token", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username})
+    });
+
+    const data = await res.json();
+    document.getElementById('generated_token').innerText = data.token;
+}
+</script>
+
+</body>
+</html>

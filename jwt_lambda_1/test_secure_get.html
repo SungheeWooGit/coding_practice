@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Protected API Test</title>
+</head>
+<body>
+
+<h2>Call Protected getTasks()</h2>
+
+<label>User ID:</label><br>
+<input id="user_id" value=""><br><br>
+
+<label>Paste JWT Token:</label><br>
+<textarea id="input_token" rows="5" cols="60"></textarea><br><br>
+
+<button onclick="getTasks()">Call getTasks()</button>
+
+<h3>API Response:</h3>
+<pre id="api_output"></pre>
+
+<script>
+// Pre-fill token if available
+document.addEventListener("DOMContentLoaded", () => {
+    const savedToken = localStorage.getItem('jwt_token');
+    if (savedToken) {
+        document.getElementById('input_token').value = savedToken;
+    }
+});
+
+async function getTasks() {
+    const token = document.getElementById('input_token').value;
+    const user_id = document.getElementById('user_id').value;
+
+    const res = await fetch(`https://9oym71uq05.execute-api.us-east-2.amazonaws.com/task?user_id=${encodeURIComponent(user_id)}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    const text = await res.text();
+    document.getElementById('api_output').innerText = text;
+}
+</script>
+
+</body>
+</html>
