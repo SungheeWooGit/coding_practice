@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Legacy Tasks API Tester</title>
+</head>
+<body>
+    <h1>Legacy Tasks API Test</h1>
+
+    <button onclick="getTasks()">Get Tasks</button>
+    <br><br>
+
+    <input type="text" id="taskTitle" placeholder="Task title">
+    <button onclick="addTask()">Add Task</button>
+
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        const API_URL = "http://13.52.150.213:9000/tasks";
+
+        function getTasks() {
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("response").innerText = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    document.getElementById("response").innerText = "Error: " + err;
+                });
+        }
+
+        function addTask() {
+            const title = document.getElementById("taskTitle").value;
+            const task = { title: title, ssn: "000-00-0000" };  // Insecure test payload
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(task)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("response").innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                document.getElementById("response").innerText = "Error: " + err;
+            });
+        }
+    </script>
+</body>
+</html>
