@@ -22,7 +22,7 @@ def lambda_handler(event, context):
 
     try:
         body = json.loads(event.get("body", "{}"))
-        username = body.get("username", "guest")
+        username = body.get("username")
 
         payload = {
             "username": username,
@@ -44,7 +44,7 @@ def lambda_handler(event, context):
 
     except Exception as e:
         return {
-            "statusCode": 400,
+            "statusCode": 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Headers': 'Content-Type',

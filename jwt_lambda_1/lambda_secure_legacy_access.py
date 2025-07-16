@@ -18,31 +18,26 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization"
             },
             "body": json.dumps({"message": "CORS preflight OK"})
         }
     
     try:
-        body = json.loads(event.get("body", "{}"))
-        username = body.get("username")
+        headers = event.get('headers', {})
+        auth_header = headers.get('authorization', '')
+        if not auth_header.startswith("Bearer "):
+            return _response(401, {"message": "Missing or invalid Authorization header"})
 
-        # Generate JWT
-        payload = {
-            "username": username,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=120)
-        }
-        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+        token = str(auth_header).strip().split(' ')[-1]
 
-        # # Get JWT from Authorization header
-        # auth_header = event['headers'].get('Authorization', '')
-        # if not auth_header.startswith('Bearer '):
-        #     return _response(401, {"message": "Missing or invalid Authorization header"})
-        # token = auth_header.split(' ')[1]
-
-        # Validate JWT
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        except jwt.ExpiredSignatureError:
+            return _response(401, {"message": "Token expired"})
+        except jwt.InvalidTokenError:
+            return _response(200, {"message": "Invalid token"})
 
         # Forward the request to legacy API
         legacy_response = requests.get(LEGACY_API_URL)
@@ -64,9 +59,8 @@ def lambda_handler(event, context):
 
 def _response(status, body):
     return {
-        "statusCode": status,
+        "statusCode": 200,
         'headers': {
-            'Content-Type': 'application/json',
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'

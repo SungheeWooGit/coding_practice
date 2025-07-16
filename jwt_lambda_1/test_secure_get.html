@@ -7,9 +7,6 @@
 
 <h2>Call Protected getTasks()</h2>
 
-<label>User ID:</label><br>
-<input id="user_id" value=""><br><br>
-
 <label>Paste JWT Token:</label><br>
 <textarea id="input_token" rows="5" cols="60"></textarea><br><br>
 
@@ -29,9 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function getTasks() {
     const token = document.getElementById('input_token').value;
-    const user_id = document.getElementById('user_id').value;
 
-    const res = await fetch(`https://9oym71uq05.execute-api.us-east-2.amazonaws.com/task?user_id=${encodeURIComponent(user_id)}`, {
+    const res = await fetch("https://9oym71uq05.execute-api.us-east-2.amazonaws.com/task", {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token
